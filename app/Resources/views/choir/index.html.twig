@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Choirs</h5>
+	<div class="list-group">
+	    {% for choir in choirs %}
+		  <a href="{{path('choir_show', {'id': choir.id})}}" class="list-group-item list-group-item-action">{{choir.title}}</a>
+	    {% endfor %}
+		  <a href="{{path('choir_new')}}" class="list-group-item list-group-item-action active">+ Add Choir</a>
+	</div>    
+  </div>
+</div>
+
+    
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="card" style="width: 100%;">
+	  <div class="card-body">
+	    <h5 class="card-title">Voices</h5>
+	    <p class="card-text">Select voice to see choristers</p>
+		<div class="list-group">
+		  {% for voice in voices %}
+		    <a href="{{path('chorister_index', {'c': choir.id, 'v': voice})}}" class="list-group-item list-group-item-action">{{voice}}</a>
+		  {% endfor %}
+	      <a href="{{path('chorister_new', {'c': choir.id})}}" class="list-group-item list-group-item-action active">Add Chorister</a>	  
+		</div>  
+	  </div>
+	</div>
+
+{% endblock %}

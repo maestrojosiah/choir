@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Edit Song</h5>
+	<form id="form">
+	  <div class="form-group">
+	    <label for="title">Title</label>
+	    <input type="text" class="form-control" id="title" aria-describedby="titleHelp" placeholder="Title" value="{{song.title}}">
+	    <small id="titleHelp" class="form-text text-muted">Title of the song.</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="verses">Voice / Sections</label>
+	    <input type="number" class="form-control" id="verses" aria-describedby="verseHelp" placeholder="Verses" value="{{song.verses}}">
+	    <small id="verseHelp" class="form-text text-muted">Total number of verses in this song.</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="chorus">Chorus</label>
+	    <select class="form-control" id="chorus" value="{{song.chorus}}">
+	      <option value="1" {% if song.chorus == '1' %} selected {% endif %}>Has Chorus</option>
+	      <option value="0" {% if song.chorus == '0' %} selected {% endif %}>No Chorus</option>
+	    </select>	  
+	  </div>
+	  <button type="button" id="save" class="btn btn-primary">Edit Song</button>
+	</form>
+	<a href="{{ path('song_index', {'c': choir.id}) }}">Back to the list</a>
+  </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+  <script type="text/javascript">
+    $(function() {
+      $("#title").focus();
+    });
+  </script>
+	<script>
+	  $(document).on('click', '#save', function(){
+			var title = $('#title').val();
+			var verses = $('#verses').val();
+			var chorus = $('#chorus').val();
+
+			$('#form').checkFields();
+			$('#save').html('Wait...');
+			$.ajax({
+	        url:'{{ (path('edit_entity')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"id": '{{song.id}}',
+				"entity": 'Song',
+				"fields": ['title', 'verses', 'chorus'],
+				"values": [title, verses, chorus],
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$('#save').html('SAVED').removeClass('btn-primary').addClass('btn-success');
+	        },
+		    error: function (xhr, status, error) {
+				console.log('error');
+		    }
+	    });
+
+	  });
+	</script>
+	<script>
+	$(document).on('keyup', '#title',function (e){
+			$('#save').html('Edit Song').removeClass('btn-success').addClass('btn-primary');
+	});
+	</script>
+	<script>
+		$(document).on('keypress', '#verses', function(e){
+			 var key = e.which;
+			 if(key == 13){
+					$("#save").click();
+					e.preventDefault();
+				} else {
+					$('#save').html('Edit Song').removeClass('btn-success').addClass('btn-primary');
+				}
+		});
+
+</script>
+{% endblock %}

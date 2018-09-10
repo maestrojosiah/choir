@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Edit Plan</h5>
+	<form id="form">
+	  <div class="form-group">
+	    <label for="commence">Commence</label>
+	    <input type="text" class="form-control timepicker" id="commence" aria-describedby="commenceHelp" placeholder="Commence at" value="{{plan.commence|date("H:i A")}}">
+	    <small id="commenceHelp" class="form-text text-muted">Type the commencing time then hit Enter or Tab.</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="conclude">Conclude</label>
+	    <input type="text" class="form-control timepicker" id="conclude" aria-describedby="concludeHelp" placeholder="Conclude at" value="{{plan.conclude|date("H:i A")}}">
+	    <small id="concludeHelp" class="form-text text-muted">Type the concluding time then hit Enter or Tab.</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="song">Song</label>
+	    <select class="form-control" id="song">
+	    	<option value="">Select a song</option>
+	    	{% for song in choir.songs|reverse %}
+	      		<option value="{{song.id}}" {% if song.title == plan.song.title %}
+	      			selected
+	      		{% endif %}>{{song.title}}</option>
+	    	{% endfor %}
+	    </select>	  
+	  </div>
+	  <div class="form-group">
+	    <label for="todo">Verse or Part To Do</label>
+	    <select class="form-control" id="todo">
+	    	{% for i in 0..plan.song.verses %}
+	    		<option val="{{i}}" {% if i == plan.todo %}
+	      			selected
+	      		{% endif %}>{{i}}</option>
+	    	{% endfor %}
+	    	{% if plan.song.chorus == true %}
+	    		<option val="Chorus">Chorus</option>
+	    	{% endif %}
+	    </select>	  
+	    <small id="concludeHelp" class="form-text text-muted">Choose the part you'll be handling today.</small>
+	  </div>
+	  <button type="button" id="save" class="btn btn-primary">Edit Plan</button>
+	</form>
+	<a href="{{ path('plan_index', {'c': choir.id, 'r': rehearsal.id}) }}">Back to the list</a>
+  </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+{% set startTime = rehearsal.starttime|date("H:iA") %}
+{% set minTime = rehearsal.starttime|date("H:iA") %}
+{% set maxTime = rehearsal.endtime|date("H:iA") %}
+	<script type="text/javascript">
+	      $(function() {
+			$('.timepicker').timepicker({
+			    timeFormat: 'HH:mm p',
+			    interval: 5,
+			    minTime: '{{minTime}}',
+			    maxTime: '{{maxTime}}',
+			    defaultTime: '5',
+			    startTime: '{{startTime}}',
+			    dynamic: false,
+			    dropdown: true,
+			    scrollbar: true
+			});
+	      });
+
+	</script>
+  <script type="text/javascript">
+    $(function() {
+      // $("#commence").focus();
+    });
+  </script>
+	<script>
+	  $(document).on('click', '#save', function(){
+			var commence = $('#commence').val();
+			var conclude = $('#conclude').val();
+			var song = $('#song').val();
+			var todo = $('#todo').val();
+			var rehearsal = '{{plan.rehearsal.id}}';
+
+			$('#form').checkFields();
+			$('#save').html('Wait...');
+			$.ajax({
+	        url:'{{ (path('edit_entity')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"id": '{{plan.id}}',
+				"entity": 'Plan',
+				"fields": ['commence', 'conclude', 'song', 'rehearsal', 'todo'],
+				"values": [commence, conclude, song, rehearsal, todo],
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$('#save').html('SAVED').removeClass('btn-primary').addClass('btn-success');
+	        },
+		    error: function (xhr, status, error) {
+				console.log('error');
+		    }
+	    });
+
+	  });
+	</script>
+	<script>
+	  $(document).on('change', '#song', function(){
+      		var song_id = jQuery(this).val();
+
+			$.ajax({
+	        url:'{{ (path('get_verses')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"song_id": song_id,
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$("#todo").html('');
+				$.each(data, function( index, value ) {
+				  $("#todo").append('<option value="'+value+'">'+value+'</option>');
+				});				
+	        },
+		    error: function (xhr, status, error) {
+				console.log('error');
+		    }
+	    });
+
+	  });
+	</script>
+	<script>
+	$(document).on('keyup', '#commence',function (e){
+			$('#save').html('Edit Plan').removeClass('btn-success').addClass('btn-primary');
+	});
+	</script>
+	<script>
+		$(document).on('keypress', '#conclude', function(e){
+			 var key = e.which;
+			 if(key == 13){
+					$("#save").click();
+					e.preventDefault();
+				} else {
+					$('#save').html('Save Plan').removeClass('btn-success').addClass('btn-primary');
+				}
+		});
+
+</script>
+{% endblock %}

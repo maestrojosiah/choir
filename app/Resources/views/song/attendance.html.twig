@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('css/jquery-ui.css')}}">
+{% endblock %}
+{% block body %}
+<p>
+  <a class="btn btn-primary btn-block" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Select A Range
+  </a>
+</p>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">
+    <form>
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <label for="datepicker_s">From:</label>
+            <input type="text" class="form-control" id="datepicker_s" aria-describedby="dateHelp" placeholder="Choose Date">
+            <small id="dateHelp" class="form-text text-muted">Select the first date you want displayed.</small>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-group">
+            <label for="datepicker_e">To:</label>
+            <input type="text" class="form-control" id="datepicker_e" aria-describedby="dateHelp" placeholder="Choose Date">
+            <small id="dateHelp" class="form-text text-muted">Select the last date you want displayed.</small>
+          </div>
+        </div>
+      </div>
+      <a href="{{path('song_attendance_list', {'c': choir.id, 'sng': song.id})}}" id="show_with_range" class="btn btn-primary">Show Rehearsal Plans</a>
+    </form>     
+  </div>
+</div>  
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">{{song.title}}- {{song_time}} minutes rehearsal</h5>
+    <p>Attendance percentage for this song - {{attendance_percentage|round}}%</p>
+    <table class="table table-striped table-sm" style="font-size:12px;">
+      <thead>
+        <tr>
+          <th scope="col">Rehearsal Started At</th>
+          <th scope="col">Duration</th>
+          <th scope="col">Part</th>
+          <th scope="col">Attended</th>
+          <th scope="col">Absent</th>
+          <th scope="col">Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+    {% for info in choristers_attendance %}
+        {% set todo = info['plan'].todo == "Chorus" ? "Chorus" : "P/V" ~ info['plan'].todo %}
+        <tr>
+          <td scope="row">{{info['plan'].commence|date("l jS F g:i A")}}</td>
+          <td>{{info['duration']|abs}} Minutes</td>
+          <td>{{todo}}</td>
+          <td>
+            <ul>
+            {% for chorister in info['chorister_list'] %}
+                {% if chorister['minutes'] > 5 %}
+                <li>{{chorister['chorister'].name}} [{{chorister['minutes']|abs}} Minutes]</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+          </td>
+          <td>
+            <ul>
+            {% for chorister in info['chorister_list'] %}
+                {% if chorister['minutes'] < 5 %}
+                <li>{{chorister['chorister'].name}} [{{chorister['minutes']|abs}} Minutes Late]</li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+          </td>
+          <td>{{info['percentage']|round}}%</td>
+        </tr>
+    {% endfor %}
+      </tbody>
+    </table>    
+    
+  </div>
+</div>
+
+    <ul>
+        <li>
+            <a href="{{ path('song_index') }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}
+{% block javascripts %}
+  <script src="{{asset('js/jquery-ui-1.9.2.custom.min.js')}}"></script> 
+  <script src="{{asset('js/jquery.timepicker.min.js')}}"></script>  
+    <script>
+      $( function() {
+        $( "#datepicker_s" ).datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+      } );
+    </script>
+    <script>
+      $( function() {
+        $( "#datepicker_e" ).datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+      } );
+    </script>
+  <script>
+    $(document).on('change', '[id^="datepicker_"]', function(){
+
+        var href = $("#show_with_range").attr('href');
+        var value = $(this).val();
+
+        var id = jQuery(this).attr("id");
+        var id_parts = id.split('_');
+        var which = id_parts[1];
+
+        var url = href+"&"+which+"="+value;
+        $("#show_with_range").attr("href", url);
+              // document.location = url;
+        
+    });
+  </script>
+
+{% endblock %}

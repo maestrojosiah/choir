@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="card col-md-6">
+          <div class="card-body">
+            <h5>{{choir.title}}</h5>
+            <div class="list-group">
+              <a href="{{path('attendance_voices', {'c': choir.id})}}" class="list-group-item list-group-item-action">Attendance</a>
+              <a href="{{path('rehearsal_index', {'c': choir.id})}}" class="list-group-item list-group-item-action">Rehearsals</a>
+              <a href="{{path('song_index', {'c': choir.id})}}" class="list-group-item list-group-item-action">Songs</a>
+              <a href="{{path('chorister_voices', {'c': choir.id})}}" class="list-group-item list-group-item-action">Choristers</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card col-md-6">
+          <div class="card-body">
+            <h5>Manage</h5>
+            <div class="list-group">
+              <a href="{{path('choir_edit', {'id': choir.id})}}" class="list-group-item list-group-item-action">Edit Choir Title</a>
+              <a href="{{path('choir_delete', {'id': choir.id})}}" class="list-group-item list-group-item-action">Delete Choir</a>
+              <a href="{{path('rehearsal_new', {'c': choir.id})}}" class="list-group-item list-group-item-action">+ Add Rehearsal</a>
+            </div>
+          </div>
+        </div>
+    </div>
+<hr />
+    <ul>
+        <li>
+            <a href="{{ path('choir_index') }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

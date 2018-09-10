@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="row">
+<div class="card col-md-6">
+  <div class="card-body">
+    <h5 class="card-title">{{rehearsal.day|date("l jS F")}}</h5>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th>Start</th>
+                <td>{{ rehearsal.starttime|date("h:i A") }}</td>
+            </tr>
+            <tr>
+                <th>End</th>
+                <td>{{ rehearsal.endtime|date("h:i A") }}</td>
+            </tr>
+            <tr>
+                <th><a href="{{path('rehearsal_edit', {'id': rehearsal.id, 'c': choir.id})}}">Edit</a></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th><a href="{{path('rehearsal_delete', {'id': rehearsal.id})}}">Delete</a></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th><a href="{{path('plan_new', {'c': choir.id, 'r': rehearsal.id})}}">Add Plan For This Rehearsal</a></th>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+    <div class="card col-md-6">
+      <div class="card-body">
+        <h5 class="card-title">Plan for this rehearsal</h5>
+        <div class="list-group">
+          {% for plan in rehearsal.plans %}
+            <a href="{{path('plan_show', {'id': plan.id, 'c': choir.id, 'r': rehearsal.id})}}" class="list-group-item list-group-item-action">{{plan.commence|date("g:i A")}} - {{plan.conclude|date("g:i A")}} - {{plan.song.title}} - Todo: {{plan.todo}} </a>
+          {% endfor %}
+          <a href="{{path('plan_new', {'c': choir.id, 'r': rehearsal.id})}}" class="list-group-item list-group-item-action active">+ Add Plan For This Rehearsal</a>
+        </div>
+      </div>
+    </div>
+</div>
+    <ul>
+        <li>
+            <a href="{{ path('rehearsal_index') }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

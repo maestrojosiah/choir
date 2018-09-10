@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="card" style="width: 100%;">
+	  <div class="card-body">
+	    <h5 class="card-title">Voices : {% if rehearsal is defined and rehearsal is not null %} Mark for {{rehearsal.day|date("l jS F")}} Rehearsal. <a href="{{path('rehearsal_list', {'c': choir.id})}}">Change Rehearsal</a>{% endif %}</h5>
+	    {% if rehearsal is defined and rehearsal is not null %}<p>From {{rehearsal.starttime|date('H:i A')}} to {{rehearsal.endtime|date('H:i A')}}</p>{% endif %}
+		<div class="list-group">
+		  {% for voice in voices if rehearsal is defined and rehearsal is not null %}
+		    <a href="{{path('attendance_index', {'c': choir.id, 'v': voice, 'r': rehearsal.id})}}" class="list-group-item list-group-item-action">{{voice}}</a>
+		  {% else %}
+		  	Oops! It seems you've not added any future rehearsals. <a href="{{path('rehearsal_new', {'c': choir.id })}}">Please add</a><a href="{{path('rehearsal_list', {'c': choir.id})}}">Change Rehearsal</a>
+		  {% endfor %}
+		    <a href="{{path('chorister_voices', {'c': choir.id})}}" class="list-group-item list-group-item-action active">Choristers Summaries</a>		  
+		    <a href="#" class="list-group-item list-group-item-action active">Songs Summaries</a>		  
+		</div>  
+	  </div>
+	</div>
+
+{% endblock %}

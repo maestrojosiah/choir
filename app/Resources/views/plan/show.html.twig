@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">{{plan.song.title}}</h5>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th>Start</th>
+                <td>{{plan.commence|date("l")}} {{ plan.commence|date("h:i A") }}</td>
+            </tr>
+            <tr>
+                <th>End</th>
+                <td>{{plan.commence|date("l")}} {{ plan.conclude|date("h:i A") }}</td>
+            </tr>
+            <tr>
+                <th><a href="{{path('plan_edit', {'id': plan.id, 'c': choir.id, 'r': rehearsal.id})}}">Edit</a></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th><a href="{{path('plan_delete', {'id': plan.id, 'r': rehearsal.id})}}">Delete</a></th>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+
+    <ul>
+        <li>
+            <a href="{{ path('plan_index', {'c': choir.id, 'r': rehearsal.id}) }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

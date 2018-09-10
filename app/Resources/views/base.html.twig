@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Rehearsal Pro</title>
+	<meta name="description" content="Blueprint: A basic template for a responsive multi-level menu" />
+	<meta name="keywords" content="blueprint, template, html, css, menu, responsive, mobile-friendly" />
+	<meta name="author" content="Codrops" />
+	<link rel="shortcut icon" href="{{asset('favicon.ico')}}">
+	<!-- food icons -->
+	<link rel="stylesheet" type="text/css" href="{{asset('css/organicfoodicons.css')}}" />
+	<!-- demo styles -->
+	<link rel="stylesheet" type="text/css" href="{{asset('css/demo.css')}}" />
+	<!-- menu styles -->
+	<link rel="stylesheet" type="text/css" href="{{asset('css/component.css')}}" />
+	<!-- bootstrap -->
+	<link rel="stylesheet" type="text/css" href="{{asset('css/bootstrap.css')}}" />
+	<!-- timepicker -->
+	<link rel="stylesheet" type="text/css" href="{{asset('css/jquery.timepicker.min.css')}}" />
+	<!-- jquery-ui -->
+	<link rel="stylesheet" href="{{asset('css/jquery.timepicker.min.css')}}">
+	<!-- fontawesome free  -->
+	{# <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"> #}
+	<script src="{{asset('js/modernizr-custom.js')}}"></script>
+	{% block stylesheets %}{% endblock stylesheets %}
+</head>
+
+<body>
+	<!-- Main container -->
+	<div class="container">
+		{% include 'templates/header.html.twig' %}
+		<button class="action action--open" aria-label="Open Menu"><span class="icon icon--menu"></span></button>
+		{% include 'templates/nav.html.twig' %}
+		<div class="content">
+		{% block body %}
+				<p class="info">Hi! What do you want to do today?</p>
+				<!-- Ajax loaded content here -->
+		{% endblock body %}
+		</div>
+	</div>
+	<!-- /view -->
+	<script src="{{asset('js/jquery-3.3.1.min.js')}}"></script>
+	<script src="{{asset('js/bootstrap.min.js')}}"></script>
+	<script src="{{asset('js/classie.js')}}"></script>
+	<script src="{{asset('js/jquery.timepicker.min.js')}}"></script>
+	<script src="{{asset('js/dummydata.js')}}"></script>
+	<script src="{{asset('js/main.js')}}"></script>
+    <script>
+    (function( $ ) {
+
+      $.fn.checkFields = function() {
+
+          return this.find('input').each(function() {
+            if($(this).val() == "")
+      			{
+      				$(this).attr('placeholder', 'This Field is Required');
+      				die();
+      			}
+          });
+
+      };
+
+    }( jQuery ));
+    </script>	
+    <script>
+	(function() {
+		var menuEl = document.getElementById('ml-menu'),
+			mlmenu = new MLMenu(menuEl, {
+				// breadcrumbsCtrl : true, // show breadcrumbs
+				initialBreadcrumb : 'Browse', // initial breadcrumb text
+				backCtrl : true, // show back button
+				// itemsDelayInterval : 60, // delay between each menu item sliding animation
+				onItemClick: loadDummyData // callback: item that doesn´t have a submenu gets clicked - onItemClick([event], [inner HTML of the clicked item])
+			});
+
+		// mobile menu toggle
+		var openMenuCtrl = document.querySelector('.action--open'),
+			closeMenuCtrl = document.querySelector('.action--close');
+
+		openMenuCtrl.addEventListener('click', openMenu);
+		closeMenuCtrl.addEventListener('click', closeMenu);
+
+		function openMenu() {
+			classie.add(menuEl, 'menu--open');
+			closeMenuCtrl.focus();
+		}
+
+		function closeMenu() {
+			classie.remove(menuEl, 'menu--open');
+			openMenuCtrl.focus();
+		}
+
+		// simulate grid content loading
+		var gridWrapper = document.querySelector('.content');
+
+		function loadDummyData(ev, itemName) {
+			// ev.preventDefault();
+
+			closeMenu();
+			gridWrapper.innerHTML = '';
+			classie.add(gridWrapper, 'content--loading');
+			setTimeout(function() {
+				classie.remove(gridWrapper, 'content--loading');
+				gridWrapper.innerHTML = '<ul class="products">' + dummyData[itemName] + '<ul>';
+			}, 700);
+		}
+	})();
+	</script>
+	<script type="text/javascript">
+	  //     $(function() {
+			// $('.timepicker').timepicker({
+			//     timeFormat: 'HH:mm p',
+			//     interval: 5,
+			//     minTime: '6',
+			//     maxTime: '11:59pm',
+			//     defaultTime: '5',
+			//     startTime: '00:00',
+			//     dynamic: false,
+			//     dropdown: true,
+			//     scrollbar: true
+			// });
+	  //     });
+
+	</script>
+	{% block javascripts %}{% endblock javascripts %}
+
+</body>
+
+</html>

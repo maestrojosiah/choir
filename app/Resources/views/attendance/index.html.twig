@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="card" style="width: 100%;">
+      <div class="card-body">
+        <h5 class="card-title">{{voice|capitalize}} : Mark for {{rehearsal.day|date("l jS F")}} Rehearsal. <a href="{{path('rehearsal_list', {'c': choir.id})}}">Change Rehearsal</a></h5>
+        <div class="list-group">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Mark</th>
+              </tr>
+            </thead>
+            <tbody>
+          {% for chorister in choristers %}
+            <tr>
+              <th scope="row">{{chorister[0].name|title}}</th>
+              <td>
+                <div class="btn-group" id="btn-group-{{chorister[0].id}}" role="group" aria-label="Basic example">
+                  <a href="#" id="mark-timein-{{chorister[0].id}}" class="btn btn-success {% if chorister[1]|length > 0 %} disabled {% endif %}">In</a>
+                  <a href="#" id="mark-timeout-{{chorister[0].id}}" class="btn btn-danger">Out</a>
+                </div>
+              </td>
+              {% if chorister[1]|length > 0 %}
+              <td>
+                <div class="btn-group" id="btn-group-{{chorister[0].id}}" role="group" aria-label="Basic example">
+                  <a href="{{path('mark_edit', {'id': chorister[1][0].id})}}" class="btn btn-success">Edit</a>
+                  <a href="{{path('mark_delete', {'id': chorister[1][0].id})}}" class="btn btn-danger">Delete</a>
+                </div>
+              </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <a href="{{path('attendance_voices', {'c': choir.id, 'r': rehearsal.id})}}"> Back to voices </a>
+        </div>
+      </div>
+    </div>
+    
+{% endblock %}
+{% block javascripts %}
+  <script>
+    $(document).on('click', '[id^="mark-"]', function(){
+
+      $(this).addClass('disabled');
+      var id = jQuery(this).attr("id");
+      var id_parts = id.split('-');
+      var entity = id_parts[1];
+      var chorister_id = id_parts[2];
+      var rehearsal_id = '{{rehearsal.id}}';
+
+      $.ajax({
+          url:'{{ (path('save_entity')) }}',
+          type: "POST",
+          dataType: "json",
+          data: {
+              "return": 'getId',
+              "entity": "Mark",
+              "fields": ['chorister', 'rehearsal'],
+              "values": [chorister_id, rehearsal_id],
+          },
+          async: true,
+          success: function (data)
+          {
+            console.log(data);
+            $("#btn-group-"+chorister_id).append('<a href="#" class="btn btn-success"></a>');
+          },
+        error: function (xhr, status, error) {
+            console.log('error');
+        }
+      });
+
+    });
+  </script>
+{% endblock %}

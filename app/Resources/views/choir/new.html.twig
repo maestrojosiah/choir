@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Add Choir</h5>
+	<form id="form">
+	  <div class="form-group">
+	    <label for="cTitle">Choir Name</label>
+	    <input type="text" class="form-control" id="cTitle" aria-describedby="titleHelp" placeholder="Choir Name / Title">
+	    <small id="titleHelp" class="form-text text-muted">The title of your choir.</small>
+	  </div>
+	  <button type="button" id="save" class="btn btn-primary">Save Choir</button>
+	</form>
+  </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+  <script type="text/javascript">
+    $(function() {
+      $("#cTitle").focus();
+    });
+  </script>
+	<script>
+	  $(document).on('click', '#save', function(){
+			var c_title = $('#cTitle').val();
+			$('#form').checkFields();
+			$('#save').html('Wait...');
+			$.ajax({
+	        url:'{{ (path('save_entity')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+						"return": 'getTitle',
+						"entity": 'Choir',
+						"fields": ['title'],
+						"values": [c_title],
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+						console.log(data);
+						$("#cTitle").val('').focus();
+						// $("#added_classes").append('<li>'+data+'</li>');
+						// $("#class_teacher").val('');
+						$('#save').html('SAVED').removeClass('btn-primary').addClass('btn-success');
+	        },
+		      error: function (xhr, status, error) {
+						console.log('error');
+		      }
+	    });
+
+	  });
+	</script>
+	<script>
+	// $(document).on('keyup', '#cTitle',function (e){
+	// 		$('#save').html('Save').removeClass('btn-success').addClass('btn-primary');
+	// });
+	</script>
+	<script>
+		$(document).on('keypress', '#cTitle', function(e){
+			 var key = e.which;
+			 if(key == 13){
+					$("#save").click();
+					e.preventDefault();
+				} else {
+					$('#save').html('Save Choir').removeClass('btn-success').addClass('btn-primary');
+				}
+		});
+
+</script>
+{% endblock %}

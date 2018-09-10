@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="card" style="width: 100%;">
+      <div class="card-body">
+        <h5 class="card-title">{{voice|capitalize}}</h5>
+        <div class="list-group">
+          {% for chorister in choristers %}
+            <a href="{{path('chorister_show', {'id': chorister.id, 'c': choir.id})}}" class="list-group-item list-group-item-action">{{chorister.name}} [{{chorister.gender|first|upper}}]</a>
+          {% endfor %}
+             <a href="{{path('chorister_new', {'c': choir.id, 'v': voice})}}" class="btn btn-secondary">+ Chorister</a>
+        </div>
+      </div>
+    </div>
+    
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Delete Rehearsal?</h5>
+	  <p class="form-text text-muted">Are you sure you want to delete <b>{{rehearsal.day|date("l jS F")}}</b> rehearsal?.</p>
+	  <button type="button" id="delete" class="btn btn-danger">Delete Rehearsal</button>
+  </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+	<script>
+	  $(document).on('click', '#delete', function(){
+			$('#save').html('Wait...');
+			$.ajax({
+	        url:'{{ (path('delete_entity')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"id": '{{rehearsal.id}}',
+				"choir": '{{rehearsal.choir.id}}',
+				"entity": 'Rehearsal',
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$('#delete').html('DELETED').removeClass('btn-danger').addClass('btn-success');
+				window.location.href = data;
+	        },
+		      error: function (xhr, status, error) {
+				console.log('error');
+		      }
+	    });
+
+	  });
+	</script>
+{% endblock %}

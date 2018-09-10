@@ -1,0 +1,32 @@
+		<nav id="ml-menu" class="menu">
+			<button class="action action--close" aria-label="Close Menu"><span class="icon icon--cross"></span></button>
+			<div class="menu__wrap">
+				{% if app.user %}
+				<ul data-menu="main" class="menu__level" tabindex="-1" role="menu" aria-label="Browse">
+					
+					{% for choir in app.user.choirs %}
+				  		<li class="menu__item" role="menuitem"><a class="menu__link" data-submenu="submenu-{{choir.id}}" aria-owns="submenu-{{choir.id}}" href="#">{{choir.title}}</a></li>
+					{% endfor %}
+					
+				</ul>
+				<!-- Submenu 1 -->
+				{% for choir in app.user.choirs if app.user %}
+					<ul data-menu="submenu-{{choir.id}}" id="submenu-{{choir.id}}" class="menu__level" tabindex="-1" role="menu" aria-label="{{choir.title}}">
+						<li class="menu__item" role="menuitem"><a class="menu__link" href="{{path('attendance_voices', {'c': choir.id})}}">Attendance</a></li>
+						<li class="menu__item" role="menuitem"><a class="menu__link" href="{{path('rehearsal_index', {'c': choir.id})}}">Rehearsals</a></li>
+						<li class="menu__item" role="menuitem"><a class="menu__link" href="{{path('song_index', {'c': choir.id})}}">Songs</a></li>
+						<li class="menu__item" role="menuitem"><a class="menu__link" href="{{path('chorister_voices', {'c': choir.id})}}">Choristers</a></li>
+						{# <li class="menu__item" role="menuitem"><a class="menu__link" data-submenu="submenu-1-1" aria-owns="submenu-1-1" href="#">Sale %</a></li> #}
+					</ul>
+				{% endfor %}
+				<!-- Submenu 1-1 -->
+{# 				<ul data-menu="submenu-1-1" id="submenu-1-1" class="menu__level" tabindex="-1" role="menu" aria-label="Sale %">
+					<li class="menu__item" role="menuitem"><a class="menu__link" href="#">Fair Trade Roots</a></li>
+					<li class="menu__item" role="menuitem"><a class="menu__link" href="#">Dried Veggies</a></li>
+					<li class="menu__item" role="menuitem"><a class="menu__link" href="#">Our Brand</a></li>
+					<li class="menu__item" role="menuitem"><a class="menu__link" href="#">Homemade</a></li>
+				</ul>
+ #}				<!-- Submenu 2 -->
+ 			{% endif %}
+			</div>
+		</nav>

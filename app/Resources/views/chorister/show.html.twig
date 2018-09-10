@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">{{chorister.name}}</h5>
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th>Voice</th>
+                <td>{{ chorister.voice }}</td>
+            </tr>
+            <tr>
+                <th>Gender</th>
+                <td>{{ chorister.gender|capitalize }}</td>
+            </tr>
+            <tr>
+                <th><a href="{{path('chorister_edit', {'id': chorister.id, 'c': choir.id})}}">Edit</a></th>
+                <td></td>
+            </tr>
+            <tr>
+                <th><a href="{{path('chorister_delete', {'id': chorister.id})}}">Delete</a></th>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <a href="{{path('attendance_list', {'c': choir.id, 'ch': chorister.id})}}" class="btn btn-secondary">Attendance</a>
+      <a href="#" class="btn btn-secondary">Right</a>
+    </div>
+
+  </div>
+</div>
+
+    <ul>
+        <li>
+            <a href="{{ path('chorister_index') }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="card" style="width: 100%;">
+  <div class="card-body">
+    <h5 class="card-title">Edit Attendance for {{mark.rehearsal.day|date("l jS F")}} - {{mark.chorister.name}}</h5>
+	<form id="form">
+	  <div class="form-group">
+	    <label for="timein">Arrived</label>
+	    <input type="text" class="form-control timepicker" id="timein" aria-describedby="timeinHelp" placeholder="Commence at" value="{{mark.timein|date("H:i A")}}">
+	    <small id="timeinHelp" class="form-text text-muted">Type the time this chorister came in.</small>
+	  </div>
+	  <div class="form-group">
+	    <label for="timeout">Left</label>
+	    <input type="text" class="form-control timepicker" id="timeout" aria-describedby="timeoutHelp" placeholder="Conclude at" value="{{mark.timeout|date("H:i A")}}">
+	    <small id="timeoutHelp" class="form-text text-muted">Type the thime this chorister timeout.</small>
+	  </div>
+	  <button type="button" id="save" class="btn btn-primary">Edit Attendance</button>
+	</form>
+	<a href="{{path('attendance_voices', {'c': mark.chorister.choir.id, 'r': mark.rehearsal.id})}}"> Back to voices </a>
+  </div>
+</div>
+
+{% endblock body %}
+{% block javascripts %}
+	<script type="text/javascript">
+	      $(function() {
+			$('.timepicker').timepicker({
+			    timeFormat: 'HH:mm p',
+			    interval: 5,
+			    minTime: '6',
+			    maxTime: '11:59pm',
+			    defaultTime: '5',
+			    startTime: '00:00',
+			    dynamic: false,
+			    dropdown: true,
+			    scrollbar: true
+			});
+	      });
+
+	</script>
+  <script type="text/javascript">
+    $(function() {
+      // $("#timein").focus();
+    });
+  </script>
+	<script>
+	  $(document).on('click', '#save', function(){
+			var timein = $('#timein').val();
+			var timeout = $('#timeout').val();
+
+			$('#form').checkFields();
+			$('#save').html('Wait...');
+			$.ajax({
+	        url:'{{ (path('edit_entity')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"id": '{{mark.id}}',
+				"entity": 'Mark',
+				"fields": ['timein', 'timeout'],
+				"values": [timein, timeout],
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$('#save').html('SAVED').removeClass('btn-primary').addClass('btn-success');
+	        },
+		    error: function (xhr, status, error) {
+				console.log('error');
+		    }
+	    });
+
+	  });
+	</script>
+	<script>
+	  $(document).on('change', '#song', function(){
+      		var song_id = jQuery(this).val();
+
+			$.ajax({
+	        url:'{{ (path('get_verses')) }}',
+	        type: "POST",
+	        dataType: "json",
+	        data: {
+				"song_id": song_id,
+	        },
+	        async: true,
+	        success: function (data)
+	        {
+				console.log(data);
+				$("#todo").html('');
+				$.each(data, function( index, value ) {
+				  $("#todo").append('<option value="'+value+'">'+value+'</option>');
+				});				
+	        },
+		    error: function (xhr, status, error) {
+				console.log('error');
+		    }
+	    });
+
+	  });
+	</script>
+	<script>
+	$(document).on('keyup', '#timein',function (e){
+			$('#save').html('Edit Plan').removeClass('btn-success').addClass('btn-primary');
+	});
+	</script>
+	<script>
+		$(document).on('keypress', '#timeout', function(e){
+			 var key = e.which;
+			 if(key == 13){
+					$("#save").click();
+					e.preventDefault();
+				} else {
+					$('#save').html('Save Plan').removeClass('btn-success').addClass('btn-primary');
+				}
+		});
+
+</script>
+{% endblock %}
